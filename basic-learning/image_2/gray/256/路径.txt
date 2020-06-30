@@ -1,0 +1,1 @@
+e:\standard image base\gray\256\cameraman.bmp e:\output\cameraman256.yuv
