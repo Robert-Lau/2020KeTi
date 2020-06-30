@@ -58,10 +58,17 @@ if __name__ == '__main__':
     b = SSR(b,3)
     g = SSR(g,3)
     r = SSR(r,3)
-    result = cv.merge([b,g,r])
+    SSR = cv.merge([b,g,r])
+
+    b = MSR(b, 3)
+    g = MSR(g, 3)
+    r = MSR(r, 3)
+    MSR = cv.merge([b, g, r])
 
     cv.imshow('original',src_img)
-    cv.imshow('SSR',result)
+    cv.imshow('SSR',SSR)
+    cv.imshow('MSR',MSR)
+
     cv.waitKey()
     cv.destroyAllWindows()
 
