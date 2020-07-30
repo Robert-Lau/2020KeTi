@@ -59,6 +59,14 @@ def get_mean(img,flag):
     else:
         print("图像为灰度图")
 
+def get_std(img):
+    B_std = np.std(img[:, :, 0])
+    G_std = np.std(img[:, :, 1])
+    R_std = np.std(img[:, :, 2])
+    print("bSTD",B_std)
+    print("gSTD",G_std)
+    print("rSTD",R_std)
+
 
 
 

@@ -176,6 +176,8 @@ if __name__ == '__main__':
     img_enhanced = hsv_automatedMSR(img,sigma_list,0.05)
 
     img_msrcr = MSRCR(img,sigma_list,G,b,alpha,beta,0.01,0.99)
+    # cv2.imshow('1',img_enhanced)
+    # cv2.waitKey()
 
     # 计算信息熵
     imgEvaluation.get_entropy(img)
@@ -185,6 +187,10 @@ if __name__ == '__main__':
     imgEvaluation.get_mean(img,0)
     imgEvaluation.get_mean(img_enhanced,0)
     imgEvaluation.get_mean(img_msrcr,0)
+    # 计算标准差
+    imgEvaluation.get_std(img)
+    imgEvaluation.get_std(img_enhanced)
+    imgEvaluation.get_std(img_msrcr)
 
     # bgr转rgb
     src = img[...,::-1]
@@ -194,7 +200,7 @@ if __name__ == '__main__':
 
     plt.subplot(321),plt.imshow(src), plt.title('src')
     plt.subplot(322),plt.hist(src.ravel(), 256, [0.1, 256])    # 绘制灰度直方图
-    plt.subplot(323),plt.imshow(img_enhanced), plt.title('hsv_amsrcr')
+    plt.subplot(323),plt.imshow(img_enhanced,cmap='gray'), plt.title('hsv_amsrcr')
     plt.subplot(324), plt.hist(img_enhanced.ravel(), 256, [0.1, 256])
     plt.subplot(325),plt.imshow(img_msrcr), plt.title('msrcr')
     plt.subplot(326), plt.hist(img_msrcr.ravel(), 256, [0.1, 256])
