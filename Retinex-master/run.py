@@ -20,6 +20,7 @@ for img_name in img_list:
         continue
     
     img = cv2.imread(os.path.join(data_path, img_name))
+    # img = cv2.resize()
     img_msrcr = retinex.MSRCR(
         img,
         config['sigma_list'],
@@ -36,16 +37,21 @@ for img_name in img_list:
         config['sigma_list']
     )
 
-    img_msrcp = retinex.MSRCP(
-        img,
-        config['sigma_list'],
-        config['low_clip'],
-        config['high_clip']
-    )
+    # img_msrcp = retinex.MSRCP(
+    #     img,
+    #     config['sigma_list'],
+    #     config['low_clip'],
+    #     config['high_clip']
+    # )
 
     shape = img.shape
+    # cv2.namedWindow('Image',cv2.WINDOW_NORMAL)
+    # cv2.namedWindow('MSRCR',cv2.WINDOW_NORMAL)
+    # cv2.namedWindow('Automated retinex',cv2.WINDOW_NORMAL)
+    # cv2.namedWindow('MSRCP',cv2.WINDOW_NORMAL)
+
     cv2.imshow('Image', img)
     cv2.imshow('MSRCR', img_msrcr)
     cv2.imshow('Automated retinex', img_amsrcr)
-    cv2.imshow('MSRCP', img_msrcp)
+    # cv2.imshow('MSRCP', cv2.WINDOW_NORMAL)
     cv2.waitKey()

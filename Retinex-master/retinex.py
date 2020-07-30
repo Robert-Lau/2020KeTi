@@ -26,11 +26,12 @@ def colorRestoration(img, alpha, beta):
 
     return color_restoration
 
-def simplestColorBalance(img, low_clip, high_clip):    
+def simplestColorBalance(img, low_clip, high_clip):
 
-    total = img.shape[0] * img.shape[1]
+    # 按照一定比例去除最小和最大灰度值
+    total = img.shape[0] * img.shape[1]  # 像素数
     for i in range(img.shape[2]):
-        unique, counts = np.unique(img[:, :, i], return_counts=True)
+        unique, counts = np.unique(img[:, :, i], return_counts=True) # 排序输出单通道图像灰度值的唯一值及其出现的次数
         current = 0
         for u, c in zip(unique, counts):            
             if float(current) / total < low_clip:
@@ -38,33 +39,33 @@ def simplestColorBalance(img, low_clip, high_clip):
             if float(current) / total < high_clip:
                 high_val = u
             current += c
-                
+        # 将大于high_val,和小于low_val的灰度值，标定为这两个值
         img[:, :, i] = np.maximum(np.minimum(img[:, :, i], high_val), low_val)
 
-    return img    
+    return img
 
 def MSRCR(img, sigma_list, G, b, alpha, beta, low_clip, high_clip):
 
     img = np.float64(img) + 1.0
 
-    img_retinex = multiScaleRetinex(img, sigma_list)    
-    img_color = colorRestoration(img, alpha, beta)    
-    img_msrcr = G * (img_retinex * img_color + b)
+    img_retinex = multiScaleRetinex(img, sigma_list)   # MSR
+    img_color = colorRestoration(img, alpha, beta)     # 色彩恢复：logR = beta*(log(alpha*I)-log(Ir+Ig+Ib) )
+    img_msrcr = G * (img_retinex * img_color + b)      # 经典MSRCR论文算法，RMSRCRi(x,y)=G[RMSRCRi(x,y)−b]
 
-    ### RGB三通道处理写法
+    ### 将对数域图像的每个值映射到[0,255]
     for i in range(img_msrcr.shape[2]):
         img_msrcr[:, :, i] = (img_msrcr[:, :, i] - np.min(img_msrcr[:, :, i])) / \
                              (np.max(img_msrcr[:, :, i]) - np.min(img_msrcr[:, :, i])) * \
                              255
-    
-    img_msrcr = np.uint8(np.minimum(np.maximum(img_msrcr, 0), 255))  # 规定到255
-    img_msrcr = simplestColorBalance(img_msrcr, low_clip, high_clip)       
+
+    img_msrcr = np.uint8(np.minimum(np.maximum(img_msrcr, 0), 255))  # 溢出处理
+    img_msrcr = simplestColorBalance(img_msrcr, low_clip, high_clip)
 
     return img_msrcr
 
 def automatedMSRCR(img, sigma_list):
 
-    img = np.float64(img) + 1.0
+    img = np.float64(img) + 1.0                           # 防止出现0灰度
 
     img_retinex = multiScaleRetinex(img, sigma_list)
 
@@ -77,12 +78,14 @@ def automatedMSRCR(img, sigma_list):
             
         low_val = unique[0] / 100.0
         high_val = unique[-1] / 100.0
+        print(unique[0],unique[-1])
         for u, c in zip(unique, count):
-            if u < 0 and c < zero_count * 0.1:
+            if u < 0 and c < zero_count * 0.05:
                 low_val = u / 100.0
-            if u > 0 and c < zero_count * 0.1:
+            if u > 0 and c < zero_count * 0.05:
                 high_val = u / 100.0
                 break
+        print(low_val,high_val)
             
         img_retinex[:, :, i] = np.maximum(np.minimum(img_retinex[:, :, i], high_val), low_val)
         
@@ -91,7 +94,7 @@ def automatedMSRCR(img, sigma_list):
                                * 255
 
     img_retinex = np.uint8(img_retinex)
-        
+
     return img_retinex
 
 def MSRCP(img, sigma_list, low_clip, high_clip):

@@ -29,7 +29,7 @@ def homomorphic_filter(src, d0=10, r1=0.5, rh=2, c=4, h=2.0, l=0.5):
 
 
 
-path = "G:/2020KeTi/basic-learning/qianguaban.jpg"
+path = "G:/2020KeTi/basic-learning/frogMountain2.jpg"
 if os.path.isfile(path):
     print("path {} is existence;".format(path))
     img = Image.open(path)

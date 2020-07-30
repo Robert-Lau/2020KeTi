@@ -121,7 +121,7 @@ if __name__ == "__main__":
     # Code parameters
     path_in = 'G:/2020KeTi/basic-learning/'
     path_out = 'C:/Users/lbw/Desktop/'
-    img_path = 'qianguaban.jpg'
+    img_path = 'frogMountain2.jpg'
     cv2.namedWindow('original image',cv2.WINDOW_AUTOSIZE)
     cv2.namedWindow('filtered image',cv2.WINDOW_AUTOSIZE)
 

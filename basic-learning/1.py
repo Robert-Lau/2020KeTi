@@ -1,8 +1,9 @@
 import cv2 as cv
 import numpy as np
+import retinex
 
-img = cv.imread('zhuanzaiji.jpg')
 
-min_nonzero = min(img[np.nonzero(img)])
-img[img==0] = min_nonzero
-print(min_nonzero)
+img = cv.imread("G:\\2020KeTi\\basic-learning\\frog.jpg",1)
+a = img[1]
+print(a)
+
