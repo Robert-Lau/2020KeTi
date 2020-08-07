@@ -13,10 +13,65 @@ import time
 import math
 from matplotlib import pyplot as plt
 
+
+# 单通道图像引导滤波
+def my_guidedFilter_oneChannel(srcImg, guidedImg, rad=9, eps=0.01):
+    srcImg = srcImg / 255.0
+    guidedImg = guidedImg / 255.0
+    img_shape = np.shape(srcImg)
+
+    #    dstImg=np.zeros(img_shape,dtype=float)
+    #
+    #    P_mean=np.zeros(img_shape,dtype=float)
+    #    I_mean=np.zeros(img_shape,dtype=float)
+    #    I_square_mean=np.zeros(img_shape,dtype=float)
+    #    I_mul_P_mean=np.zeros(img_shape,dtype=float)
+    #    var_I=np.zeros(img_shape,dtype=float)
+    #    cov_I_P=np.zeros(img_shape,dtype=float)
+    #
+    #    a=np.zeros(img_shape,dtype=float)
+    #    b=np.zeros(img_shape,dtype=float)
+    #    a_mean=np.zeros(img_shape,dtype=float)
+    #    b_mean=np.zeros(img_shape,dtype=float)
+
+    P_mean = cv2.boxFilter(srcImg, -1, (rad, rad), normalize=True)
+    I_mean = cv2.boxFilter(guidedImg, -1, (rad, rad), normalize=True)
+
+    I_square_mean = cv2.boxFilter(np.multiply(guidedImg, guidedImg), -1, (rad, rad), normalize=True)
+    I_mul_P_mean = cv2.boxFilter(np.multiply(srcImg, guidedImg), -1, (rad, rad), normalize=True)
+
+    var_I = I_square_mean - np.multiply(I_mean, I_mean)
+    cov_I_P = I_mul_P_mean - np.multiply(I_mean, P_mean)
+
+    a = cov_I_P / (var_I + eps)
+    b = P_mean - np.multiply(a, I_mean)
+
+    a_mean = cv2.boxFilter(a, -1, (rad, rad), normalize=True)
+    b_mean = cv2.boxFilter(b, -1, (rad, rad), normalize=True)
+
+    dstImg = np.multiply(a_mean, guidedImg) + b_mean
+
+    return dstImg * 255.0
+
+# 三通道图像引导滤波
+def my_guidedFilter_threeChannel(srcImg, guidedImg, rad=9, eps=0.01):
+    img_shape = np.shape(srcImg)
+
+    dstImg = np.zeros(img_shape, dtype=float)
+
+    for ind in range(img_shape[2]):
+        dstImg[:, :, ind] = my_guidedFilter_oneChannel(srcImg[:, :, ind],
+                                                       guidedImg[:, :, ind], rad, eps)
+
+    dstImg = dstImg.astype(np.uint8)
+
+    return dstImg
+
 def singleScaleRetinex(img, sigma):
 
     retinex = np.log10(img) - np.log10(cv2.GaussianBlur(img, (0, 0), sigma))
-
+    # retinex = np.log10(img) - np.log10(my_guidedFilter_oneChannel(img, img, 21, 0.01))
+    # print(retinex.shape)
     return retinex
 
 def multiScaleRetinex(img, sigma_list):
@@ -179,6 +234,10 @@ if __name__ == '__main__':
     # cv2.imshow('1',img_enhanced)
     # cv2.waitKey()
 
+    # 垂直组合图片，并输出
+    res = np.vstack((img,img_enhanced,img_msrcr))
+    cv2.imwrite("C:\\Users\\lbw\\Desktop\\7.jpg",res)
+
     # 计算信息熵
     imgEvaluation.get_entropy(img)
     imgEvaluation.get_entropy(img_enhanced)
@@ -191,19 +250,40 @@ if __name__ == '__main__':
     imgEvaluation.get_std(img)
     imgEvaluation.get_std(img_enhanced)
     imgEvaluation.get_std(img_msrcr)
+    # 计算平均梯度
+    imgEvaluation.get_average_gradient(img)
+    imgEvaluation.get_average_gradient(img_enhanced)
+    imgEvaluation.get_average_gradient(img_msrcr)
 
-    # bgr转rgb
-    src = img[...,::-1]
+
+    # bgr转rgb，方便pyplot输出
+    img = img[...,::-1]
     # img_amsr = img_amsr[...,::-1]
     img_enhanced = img_enhanced[..., ::-1]
     img_msrcr = img_msrcr[...,::-1]
 
-    plt.subplot(321),plt.imshow(src), plt.title('src')
-    plt.subplot(322),plt.hist(src.ravel(), 256, [0.1, 256])    # 绘制灰度直方图
-    plt.subplot(323),plt.imshow(img_enhanced,cmap='gray'), plt.title('hsv_amsrcr')
+    # 灰度图
+    src_ = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    img_enhanced_ = cv2.cvtColor(img_enhanced,cv2.COLOR_BGR2GRAY)
+    img_msrcr_ = cv2.cvtColor(img_msrcr,cv2.COLOR_BGR2GRAY)
+
+    #
+    # plt.subplot(321),plt.imshow(src_,'gray'), plt.title('src')
+    # plt.subplot(322),plt.hist(src_.ravel(), 256, [0.1, 256])    # 绘制灰度直方图
+    # plt.subplot(323),plt.imshow(img_enhanced_,cmap='gray'), plt.title('hsv_amsrcr')
+    # plt.subplot(324), plt.hist(img_enhanced_.ravel(), 256, [0.1, 256])
+    # plt.subplot(325),plt.imshow(img_msrcr_,'gray'), plt.title('msrcr')
+    # plt.subplot(326), plt.hist(img_msrcr_.ravel(), 256, [0.1, 256])
+    # plt.show()
+    # cv2.waitKey()
+
+    plt.subplot(321), plt.imshow(img), plt.title('src')
+    plt.subplot(322), plt.hist(img.ravel(), 256, [0.1, 256])  # 绘制灰度直方图
+    plt.subplot(323), plt.imshow(img_enhanced), plt.title('hsv_amsrcr')
     plt.subplot(324), plt.hist(img_enhanced.ravel(), 256, [0.1, 256])
-    plt.subplot(325),plt.imshow(img_msrcr), plt.title('msrcr')
+    plt.subplot(325), plt.imshow(img_msrcr), plt.title('msrcr')
     plt.subplot(326), plt.hist(img_msrcr.ravel(), 256, [0.1, 256])
     plt.show()
     cv2.waitKey()
+
     cv2.destroyAllWindows()
