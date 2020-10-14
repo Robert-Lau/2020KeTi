@@ -223,8 +223,8 @@ if __name__ == '__main__':
     sigma_list = [15,80,250]
     alpha, beta = 125.0, 46.0
     G, b = 192.0, -30.0
-    # img = cv2.imread("G:\\2020KeTi\\basic-learning\\qianguaban.jpg", 1)
-    img = cv2.imread("C:\\Users\\lbw\\Desktop\\test\\hubang.jpg", 1)
+    # img = cv2.imread("G:\\2020KeTi\\basic-learning\\frogMountain.jpg", 1)
+    img = cv2.imread("C:\\Users\\lbw\\Desktop\\test\\18.jpg", 1)
 
     # img_amsr = automatedMSRCR(img,sigma_list,0.05)
 
@@ -236,25 +236,7 @@ if __name__ == '__main__':
 
     # 垂直组合图片，并输出
     res = np.vstack((img,img_enhanced,img_msrcr))
-    cv2.imwrite("C:\\Users\\lbw\\Desktop\\7.jpg",res)
-
-    # 计算信息熵
-    imgEvaluation.get_entropy(img)
-    imgEvaluation.get_entropy(img_enhanced)
-    imgEvaluation.get_entropy(img_msrcr)
-    # 计算均值
-    imgEvaluation.get_mean(img,0)
-    imgEvaluation.get_mean(img_enhanced,0)
-    imgEvaluation.get_mean(img_msrcr,0)
-    # 计算标准差
-    imgEvaluation.get_std(img)
-    imgEvaluation.get_std(img_enhanced)
-    imgEvaluation.get_std(img_msrcr)
-    # 计算平均梯度
-    imgEvaluation.get_average_gradient(img)
-    imgEvaluation.get_average_gradient(img_enhanced)
-    imgEvaluation.get_average_gradient(img_msrcr)
-
+    cv2.imwrite("C:\\Users\\lbw\\Desktop\\gaussain.jpg",res)
 
     # bgr转rgb，方便pyplot输出
     img = img[...,::-1]
@@ -287,3 +269,20 @@ if __name__ == '__main__':
     cv2.waitKey()
 
     cv2.destroyAllWindows()
+
+    # 计算信息熵
+    imgEvaluation.get_entropy(img)
+    imgEvaluation.get_entropy(img_enhanced)
+    imgEvaluation.get_entropy(img_msrcr)
+    # 计算均值
+    imgEvaluation.get_mean(img, 0)
+    imgEvaluation.get_mean(img_enhanced, 0)
+    imgEvaluation.get_mean(img_msrcr, 0)
+    # 计算标准差
+    imgEvaluation.get_std(img)
+    imgEvaluation.get_std(img_enhanced)
+    imgEvaluation.get_std(img_msrcr)
+    # 计算平均梯度
+    imgEvaluation.get_average_gradient(img)
+    imgEvaluation.get_average_gradient(img_enhanced)
+    imgEvaluation.get_average_gradient(img_msrcr)

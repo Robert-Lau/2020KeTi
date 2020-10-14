@@ -44,7 +44,7 @@ def get_entropy(img):
             res = float(res - tmp[i] * (math.log(tmp[i]) / math.log(2.0)))
     print(res)
 
-
+# 均值
 def get_mean(img,flag):
     if flag == 1 and len(img.shape) == 3:
         B_mean = np.mean(img[:, :, 0])
@@ -63,6 +63,7 @@ def get_mean(img,flag):
     elif flag == 1 and len(img.shape) == 2:
         print("图像为灰度图")
 
+# 标准差
 def get_std(img):
     if len(img.shape) == 3:
         B_std = np.std(img[:, :, 0])
@@ -75,6 +76,7 @@ def get_std(img):
         std = np.std(img)
         print("STD=",std)
 
+# 平均梯度
 def get_average_gradient(img):
     if len(img.shape) == 3:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
