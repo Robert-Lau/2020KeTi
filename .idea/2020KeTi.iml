@@ -7,8 +7,9 @@
       <sourceFolder url="file://$MODULE_DIR$/口罩识别/口罩佩戴识别/MaskDetecterSystem/MaskDetecterSystem" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/口罩佩戴识别/MaskDetecterSystem/MaskDetecterSystem" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/Liu_aMSRCR" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 3.8" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.8 (2020KeTi)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
   <component name="TestRunnerService">

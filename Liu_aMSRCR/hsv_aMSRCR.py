@@ -70,7 +70,7 @@ def my_guidedFilter_threeChannel(srcImg, guidedImg, rad=9, eps=0.01):
 def singleScaleRetinex(img, sigma):
 
     retinex = np.log10(img) - np.log10(cv2.GaussianBlur(img, (0, 0), sigma))
-    # retinex = np.log10(img) - np.log10(my_guidedFilter_oneChannel(img, img, 21, 0.01))
+    # retinex = np.log10(img) - np.log10(my_guidedFilter_oneChannel(img, img, 16, 0.01))
     # print(retinex.shape)
     return retinex
 
@@ -217,26 +217,28 @@ def hsv_automatedMSR(img, sigma_list,y):
 
     return img_enhanced
 
-
-
 if __name__ == '__main__':
     sigma_list = [15,80,250]
     alpha, beta = 125.0, 46.0
     G, b = 192.0, -30.0
-    # img = cv2.imread("G:\\2020KeTi\\basic-learning\\frogMountain.jpg", 1)
-    img = cv2.imread("C:\\Users\\lbw\\Desktop\\test\\18.jpg", 1)
+    img = cv2.imread("C:\\Users\\lbw\\Desktop\\lowlight_2.jpg", 1)
+    # 缩小图像
+    # x, y = img.shape[0:2]
+    # img= cv2.resize(img, (int(y / 4), int(x / 4)))
 
-    # img_amsr = automatedMSRCR(img,sigma_list,0.05)
+    img_enhanced = automatedMSRCR(img,sigma_list,0.05)
 
     img_enhanced = hsv_automatedMSR(img,sigma_list,0.05)
-
+    # 直接输出增强图像
+    # cv2.imwrite("C:\\Users\\lbw\\Desktop\\fog.png",img_enhanced)
     img_msrcr = MSRCR(img,sigma_list,G,b,alpha,beta,0.01,0.99)
     # cv2.imshow('1',img_enhanced)
     # cv2.waitKey()
 
     # 垂直组合图片，并输出
-    res = np.vstack((img,img_enhanced,img_msrcr))
-    cv2.imwrite("C:\\Users\\lbw\\Desktop\\gaussain.jpg",res)
+    res = np.vstack((img,img_msrcr,img_enhanced))
+    cv2.imwrite("C:\\Users\\lbw\\Desktop\\lowlight_2_result.png",res)
+    # cv2.imwrite("C:\\Users\\lbw\\Desktop\\fog_1_result.png",img_enhanced)
 
     # bgr转rgb，方便pyplot输出
     img = img[...,::-1]
@@ -261,28 +263,36 @@ if __name__ == '__main__':
 
     plt.subplot(321), plt.imshow(img), plt.title('src')
     plt.subplot(322), plt.hist(img.ravel(), 256, [0.1, 256])  # 绘制灰度直方图
-    plt.subplot(323), plt.imshow(img_enhanced), plt.title('hsv_amsrcr')
-    plt.subplot(324), plt.hist(img_enhanced.ravel(), 256, [0.1, 256])
-    plt.subplot(325), plt.imshow(img_msrcr), plt.title('msrcr')
-    plt.subplot(326), plt.hist(img_msrcr.ravel(), 256, [0.1, 256])
-    plt.show()
+    plt.subplot(325), plt.imshow(img_enhanced), plt.title('hsv_amsrcr')
+    plt.subplot(326), plt.hist(img_enhanced.ravel(), 256, [0.1, 256])
+    plt.subplot(323), plt.imshow(img_msrcr), plt.title('msrcr')
+    plt.subplot(324), plt.hist(img_msrcr.ravel(), 256, [0.1, 256])
     cv2.waitKey()
 
     cv2.destroyAllWindows()
 
     # 计算信息熵
     imgEvaluation.get_entropy(img)
-    imgEvaluation.get_entropy(img_enhanced)
     imgEvaluation.get_entropy(img_msrcr)
+    imgEvaluation.get_entropy(img_enhanced)
+
     # 计算均值
     imgEvaluation.get_mean(img, 0)
-    imgEvaluation.get_mean(img_enhanced, 0)
     imgEvaluation.get_mean(img_msrcr, 0)
+    imgEvaluation.get_mean(img_enhanced, 0)
+
     # 计算标准差
     imgEvaluation.get_std(img)
-    imgEvaluation.get_std(img_enhanced)
     imgEvaluation.get_std(img_msrcr)
+    imgEvaluation.get_std(img_enhanced)
+
     # 计算平均梯度
     imgEvaluation.get_average_gradient(img)
-    imgEvaluation.get_average_gradient(img_enhanced)
     imgEvaluation.get_average_gradient(img_msrcr)
+    imgEvaluation.get_average_gradient(img_enhanced)
+
+    imgEvaluation.contrast(img)
+    imgEvaluation.contrast(img_msrcr)
+    imgEvaluation.contrast(img_enhanced)
+
+    plt.show()
